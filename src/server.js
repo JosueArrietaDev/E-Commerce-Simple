@@ -1,17 +1,20 @@
+require('dotenv').config({ path: './config/.env' });
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-require('dotenv').config();
+
 
 const app = express();
 const uri = process.env.MONGO_URI;
 
-const productRoutes = require('./routes/productRoutes');
-const cartRoutes = require('./routes/cartRoutes');
+const productRoutes = require('../src/routes/productRoutes');
+const cartRoutes = require('../src/routes/cartRoutes');
 
 // Middleware
 app.use(express.json());
 app.use(cors());
+app.use(express.static('public'));
+
 app.use('/api/productos', productRoutes);
 app.use('/api/carrito', cartRoutes);
 
