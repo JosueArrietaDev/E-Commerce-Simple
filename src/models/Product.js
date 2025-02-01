@@ -1,15 +1,49 @@
 const mongoose = require('mongoose');
 
-// Definir el esquema para los productos
 const productSchema = new mongoose.Schema({
-  nombre: { type: String, required: true },          // Nombre del producto
-  precio: { type: Number, required: true },          // Precio del producto
-  descripcion: { type: String, required: true },     // Descripción del producto
-  stock: { type: Number, required: true },           // Cantidad disponible en inventario
-  baje: { type: Boolean, default: false }            // Indica si tiene descuento
+  nombre: {
+    type: String,
+    required: true
+  },
+  precio: {
+    type: Number,
+    required: true
+  },
+  descripcion: {
+    type: String,
+    required: true
+  },
+  stock: {
+    type: Number,
+    required: true
+  },
+  baje: {
+    type: Boolean,
+    default: false
+  },
+  descuento: {
+    porcentaje: {
+      type: Number,
+      default: 0
+    },
+    activo: {
+      type: Boolean,
+      default: false
+    },
+    descripcion: {
+      type: String,
+      default: ''
+    }
+  }
 });
 
-// Crear el modelo basado en el esquema
-const Product = mongoose.model('Product', productSchema);
+// Método para calcular precio con descuento
+productSchema.methods.getPrecioFinal = function() {
+  if (this.descuento.activo) {
+    const descuento = this.precio * (this.descuento.porcentaje / 100);
+    return this.precio - descuento;
+  }
+  return this.precio;
+};
 
-module.exports = Product;
+module.exports = mongoose.model('Product', productSchema);
