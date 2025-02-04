@@ -24,25 +24,28 @@ ecommerce-proyecto/
 │
 ├── src/
 │   ├── models/
-│   │   ├── Producto.js
-│   │   └── Carrito.js
+│   │   ├── Product.js
+│   │   └── Cart.js
 │   ├── routes/
-│   │   ├── productosRoutes.js
-│   │   └── carritoRoutes.js
-│   ├── controllers/
-│   │   ├── productosController.js
-│   │   └── carritoController.js
-│   ├── views/
-│   │   ├── home.html
-│   │   └── carrito.html
-│   └── scripts/
-│       ├── productos.js
-│       └── carrito.js
-│
+│   │   ├── productRoutes.js
+│   │   ├── discountRoutes.js
+│   │   ├── cartRoutes.js
+│   │   ├── quantity.js
+│   │   └── purchaseRoutes.js
+│   │
+│   ├── js/
+│   │    ├── productos.js
+│   │    ├── app.js
+│   │    ├── api.js
+│   │    └── carrito.js
+│   │    
+│   └── server.js
+│   
 ├── config/
 │   └── .env
 │
 ├── .gitignore
 ├── package.json
-└── server.js 
+├── package-lock.json
+└── Readme.txt
 

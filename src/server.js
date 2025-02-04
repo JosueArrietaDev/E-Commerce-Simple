@@ -7,13 +7,11 @@ const cors = require('cors');
 
 const app = express();
 const uri = process.env.MONGO_URI;
-
 const productRoutes = require('../src/routes/productRoutes');
 const cartRoutes = require('../src/routes/cartRoutes');
 const quantityRoutes = require('../src/routes/quantityRoutes');
 const purchaseRoutes = require('./routes/purchaseRoutes');
-
-
+const discountRoutes = require('./routes/discountRoutes');
 
 // Middleware
 app.use(express.json());
@@ -23,6 +21,8 @@ app.use('/api/cantidad', quantityRoutes);
 app.use('/api/productos', productRoutes);
 app.use('/api/carrito', cartRoutes);
 app.use('/api/purchase', purchaseRoutes);
+app.use('/api/productosConDescuento', discountRoutes);
+
 
 // Variables de entorno
 const PORT = process.env.PORT || 5000;
