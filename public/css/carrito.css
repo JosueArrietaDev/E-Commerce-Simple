@@ -1,0 +1,13 @@
+/* public/css/carrito.css */
+.cart-item {
+    border-bottom: 1px solid #eee;
+    padding: 1rem 0;
+}
+
+.cart-total {
+    position: sticky;
+    bottom: 0;
+    background: white;
+    padding: 1rem;
+    border-top: 2px solid #eee;
+}

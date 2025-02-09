@@ -30,7 +30,7 @@ ecommerce-proyecto/
 │   │   ├── productRoutes.js
 │   │   ├── discountRoutes.js
 │   │   ├── cartRoutes.js
-│   │   ├── quantity.js
+│   │   ├── quantityRoutes.js
 │   │   └── purchaseRoutes.js
 │   │
 │   ├── js/
