@@ -31,7 +31,7 @@ router.post('/checkout', async (req, res) => {
       let descuentoProducto = 0;
 
       // Aplicar descuento si corresponde
-      if (producto.baje) {
+      if (producto.rebaja) {
         descuentoProducto = subtotalProducto * 0.15; // 15% descuento
       }
 

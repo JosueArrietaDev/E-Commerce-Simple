@@ -7,9 +7,10 @@ const Product = require('../models/Product');
 router.get('/', async (req, res) => {
  
   try {
+   
     const cart = await Cart.findOne() || await new Cart().save();
 
-        /* Desglose de funciones:
+      /* Desglose de funciones:
            1. await Cart.findOne() -> Busca el primer carrito en la base de datos
            2. Si no encuentra carrito (null), entonces ejecuta: await new Cart().save()
            3. new Cart() -> Crea una nueva instancia de carrito vacío
@@ -29,24 +30,24 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
     // Realiza las Verificaciones
     try {
-    // 1. Primera verificación: Datos recibidos
+    // 1. Datos recibidos
     const { productoId, cantidad } = req.body;  // Obtiene ID y cantidad
     const producto = await Product.findById(productoId); // Busca el producto
     
-    // 2. Segunda verificación: ¿Existe el producto?
+    // 2.¿Existe el producto?
     if (!producto) {
       return res.status(404).json({ message: 'Producto no encontrado' });
     }
 
-    // 3. Tercera verificación: ¿Hay suficiente stock?
+    // 3. ¿Hay suficiente stock?
     if (producto.stock < cantidad) {
       return res.status(400).json({ message: 'Stock insuficiente' });
     }
     
-    // 4. Cuarta verificación: ¿Existe un carrito?
+    // 4.  ¿Existe un carrito?
     let cart = await Cart.findOne() || await new Cart().save();
     
-    // 5. Quinta verificación: ¿El producto ya está en el carrito?
+    // 5.  ¿El producto ya está en el carrito?
     const existingProductIndex = cart.productos.findIndex(
       item => item.productoId.toString() === productoId
     );

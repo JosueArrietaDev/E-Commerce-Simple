@@ -17,7 +17,7 @@ const productSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
-  baje: {
+  rebaja: {
     type: Boolean,
     default: false
   },
