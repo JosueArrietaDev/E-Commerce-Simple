@@ -3,17 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Mi Tienda</title>
+    <title>Vida Saludable</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./css/styles.css">
+
     <link rel="stylesheet" href="./css/productos.css">
     <link rel="stylesheet" href="./css/carrito.css">
+
+    <link rel="icon" href="./images/favIconOficial.png" type="image/x-icon">
 </head>
 <body>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container">
-            <a class="navbar-brand" href="#">Mi Tienda</a>
+            <a class="navbar-brand" href="#">Tu Tiendita</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -32,6 +36,32 @@
             </div>
         </div>
     </nav>
+
+    <!-- carrusel -->
+    <div class="container mb-4">
+        <!-- Link a Ofertas -->
+        <div class="text-end my-3">
+            <a href="#ofertas" class="btn btn-warning">🔥 Ofertas de la Semana</a>
+        </div>
+        
+        <!-- Carrusel -->
+        <div id="productCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#productCarousel" data-bs-slide-to="0" class="active"></button>
+                <button type="button" data-bs-target="#productCarousel" data-bs-slide-to="1"></button>
+                <button type="button" data-bs-target="#productCarousel" data-bs-slide-to="2"></button>
+            </div>
+            <div class="carousel-inner">
+                <!-- Los items del carrusel se cargarán dinámicamente -->
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon"></span>
+            </button>
+        </div>
+    </div>
 
     <!-- Contenedor Principal -->
     <div class="container">
@@ -72,6 +102,7 @@
     <script type="module" src="/js/api.js"> </script>
     <script src="/js/productos.js"></script>
     <script src="/js/carrito.js"></script>
-    
+    <script src="/src/js/ofertas.js" ></script>
+
 </body>
 </html>
