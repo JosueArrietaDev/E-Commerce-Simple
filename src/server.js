@@ -19,14 +19,16 @@ app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
-
-app.use('/js', express.static(path.join(__dirname, '/js')));
+app.use('/js', express.static(path.join(__dirname, '../src/js')));
 app.use('/css', express.static(path.join(__dirname, '/css'))); 
 app.use('/api/cantidad', quantityRoutes);
 app.use('/api/productos', productRoutes);
 app.use('/api/carrito', cartRoutes);
 app.use('/api/purchase', purchaseRoutes);
 app.use('/api/productosConDescuento', discountRoutes);
+
+console.log(__dirname);  // Depuración
+console.log(path.join(__dirname, 'src/js')); // Depuración
 
 
 // Variables de entorno

@@ -2,48 +2,58 @@ const express = require('express');
 const router = express.Router();
 const Product = require('../models/Product');
 
-// GET /api/productos - Obtener todos los productos
-router.get('/', async (req, res) => {
-  try {
-    const productos = await Product.find();
-    res.json(productos);
-  } catch (err) {
-    res.status(500).json({ message: 'Error al obtener productos', error: err });
-  }
+// Obtener todos los productos
+router.get('/', async (req, res, next) => {
+    try {
+        const productos = await Product.find();
+        res.json(productos);
+    } catch (err) {
+        next(err); //  Pasa el error al middleware global
+    }
 });
 
-// POST /api/productos - Crear nuevo producto
-router.post('/', async (req, res) => {
-  try {
-    const nuevoProducto = new Product(req.body);
-    const productoGuardado = await nuevoProducto.save();
-    res.status(201).json(productoGuardado);
-  } catch (err) {
-    res.status(400).json({ message: 'Error al crear producto', error: err });
-  }
+// Agregar un nuevo producto
+router.post('/', async (req, res, next) => {
+    try {
+        const { nombre, precio, descripcion, stock, rebaja } = req.body;
+        if (!nombre || !precio || !descripcion || stock === undefined) {
+            return res.status(400).json({ error: "Todos los campos son obligatorios" });
+        }
+
+        const nuevoProducto = new Product({ nombre, precio, descripcion, stock, rebaja });
+        await nuevoProducto.save();
+        res.status(201).json(nuevoProducto);
+    } catch (err) {
+        next(err);
+    }
 });
 
-// PATCH /api/productos/:id/disminuir - Actualizar stock
-router.patch('/:id/disminuir', async (req, res) => {
-  try {
-    const { cantidad = -1 } = req.body;  // Default to -1 if not specified
-    const producto = await Product.findById(req.params.id);
-    
-    if (!producto) {
-      return res.status(404).json({ message: 'Producto no encontrado' });
+// Disminuir el stock de un producto
+router.patch('/:id/disminuir', async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const producto = await Product.findById(id);
+
+        if (!producto) {
+            return res.status(404).json({ error: "Producto no encontrado" });
+        }
+
+        if (producto.stock <= 0) {
+            return res.status(400).json({ error: "Stock insuficiente" });
+        }
+
+        producto.stock -= 1;
+        await producto.save();
+        res.json({ message: "Stock actualizado", producto });
+    } catch (err) {
+        next(err);
     }
-    
-    // Check if stock would go negative
-    if (producto.stock + cantidad < 0) {
-      return res.status(400).json({ message: 'Stock insuficiente' });
-    }
-    
-    producto.stock += cantidad;  // Now works with negative and positive values
-    await producto.save();
-    res.json(producto);
-  } catch (err) {
-    res.status(500).json({ message: 'Error al actualizar stock', error: err });
-  }
+});
+
+// Middleware de manejo de errores global
+router.use((err, req, res, next) => {
+    console.error("Error en la API:", err);
+    res.status(500).json({ error: "Error interno del servidor" });
 });
 
 module.exports = router;
