@@ -1,16 +1,35 @@
 const mongoose = require('mongoose');
 
-const cartSchema = new mongoose.Schema({
-  productos: [{     // Array de productos en el carrito
-    productoId: {   // ID del producto (referencia)
-      type: mongoose.Schema.Types.ObjectId,  // Tipo especial para IDs de MongoDB
-      ref: 'Product',
-      required: true
-    },
-    nombre: { type: String, required: true },   // Nombre
-    precio: { type: Number, required: true },   // Precio
-    cantidad: { type: Number, required: true, min: 1 } // Cantidad mínima 1
-  }]
+const CartSchema = new mongoose.Schema({
+    productos: [
+        {
+            productoId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Product',
+                required: true
+            },
+            nombre: {
+                type: String,
+                required: true,
+                trim: true
+            },
+            precio: {
+                type: Number,
+                required: true,
+                min: 0
+            },
+            cantidad: {
+                type: Number,
+                required: true,
+                min: 1  // 🔹 No permite cantidades negativas o 0
+            }
+        }
+    ],
+    fechaCreacion: {
+        type: Date,
+        default: Date.now
+    }
 });
 
-module.exports = mongoose.model('Cart', cartSchema);
+const Cart = mongoose.model('Cart', CartSchema);
+module.exports = Cart;
