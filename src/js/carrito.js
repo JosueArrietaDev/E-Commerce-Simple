@@ -14,7 +14,7 @@ let carritoState = {
 /**
  * Inicializa el carrito
  */
-async function initializeCart() {
+export async function initializeCart() {
     await actualizarCarrito();
     setupEventListeners();
 }
@@ -42,21 +42,24 @@ function setupEventListeners() {
  */
 export async function actualizarCarrito() {
     try {
-        const cart = await obtenerCarrito();
-        actualizarEstadoCarrito(cart);
-        renderizarCarrito();
-        actualizarContadores();
+        const cart = await obtenerCarrito(); // Obtener datos actualizados del carrito
+        if (!cart || !cart.productos) throw new Error("El carrito está vacío o no se obtuvo correctamente");
+
+        actualizarEstadoCarrito(cart); // Actualiza el estado global
+        renderizarCarrito(); // Muestra los productos en el offcanvas
+        actualizarContadores(); // Refresca la cantidad de ítems en el icono del carrito
     } catch (error) {
         console.error('Error al actualizar el carrito:', error);
         showToast('Error al actualizar el carrito', true);
     }
 }
 
+
 /**
  * Actualiza el estado interno del carrito
  * @param {Object} cart - Datos del carrito
  */
-function actualizarEstadoCarrito(cart) {
+export function actualizarEstadoCarrito(cart) {
     carritoState.productos = cart.productos || [];
     calcularTotales();
 }
@@ -64,7 +67,7 @@ function actualizarEstadoCarrito(cart) {
 /**
  * Calcula los totales del carrito
  */
-function calcularTotales() {
+export function calcularTotales() {
     carritoState.subtotal = carritoState.productos.reduce((total, item) => {
         return total + (item.precio * item.cantidad);
     }, 0);
@@ -82,7 +85,7 @@ function calcularTotales() {
 /**
  * Renderiza los productos del carrito
  */
-function renderizarCarrito() {
+export function renderizarCarrito() {
     const carritoContainer = document.getElementById('carrito-items');
     if (!carritoContainer) return;
 
@@ -119,7 +122,7 @@ function renderizarCarrito() {
 /**
  * Actualiza los contadores y totales en la UI
  */
-function actualizarContadores() {
+export function actualizarContadores() {
     const elementos = {
         cantidad: document.getElementById('cantidad-carrito'),
         subtotal: document.getElementById('carrito-subtotal'),
@@ -149,11 +152,23 @@ async function handleCompra() {
 
     try {
         btnComprar.disabled = true;
-        const response = await comprarCarrito();
+        const response = await fetch(`${API_URL}/purchase/checkout`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || 'Error al procesar la compra');
+        }
+
         showToast('¡Compra realizada con éxito!');
         await actualizarCarrito();
         
-        // Cerrar el offcanvas después de la compra
+        // Cerrar el offcanvas
         const offcanvas = document.getElementById('carritoOffcanvas');
         if (offcanvas) {
             const bsOffcanvas = bootstrap.Offcanvas.getInstance(offcanvas);
@@ -161,12 +176,50 @@ async function handleCompra() {
                 bsOffcanvas.hide();
             }
         }
+
+        // Mostrar resumen de la compra
+        if (data.resumen) {
+            mostrarResumenCompra(data.resumen);
+        }
+
     } catch (error) {
-        console.error('Error al procesar la compra:', error);
-        showToast('Error al procesar la compra. Por favor, intente nuevamente.', true);
+        showToast('Error al procesar la compra: ' + error.message, true);
     } finally {
         btnComprar.disabled = false;
     }
+}
+
+function mostrarResumenCompra(resumen) {
+    const modal = new bootstrap.Modal(document.createElement('div'));
+    modal.element.innerHTML = `
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Resumen de Compra</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Fecha:</strong> ${new Date(resumen.fecha).toLocaleString()}</p>
+                    <h6>Productos:</h6>
+                    <ul>
+                        ${resumen.detalleProductos.map(item => `
+                            <li>${item.producto} x${item.cantidad} - $${item.total.toFixed(2)}</li>
+                        `).join('')}
+                    </ul>
+                    <div class="mt-3">
+                        <p><strong>Subtotal:</strong> $${resumen.resumenFinanciero.subtotal.toFixed(2)}</p>
+                        <p><strong>Descuento:</strong> $${resumen.resumenFinanciero.descuentoTotal.toFixed(2)}</p>
+                        <p><strong>Total:</strong> $${resumen.resumenFinanciero.total.toFixed(2)}</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal.element);
+    modal.show();
 }
 
 /**
@@ -175,11 +228,17 @@ async function handleCompra() {
  */
 export async function eliminarProducto(productoId) {
     try {
-        await eliminarDelCarrito(productoId);
+        const response = await fetch(`${API_URL}/carrito/${productoId}`, {
+            method: 'DELETE'
+        });
+
+        if (!response.ok) {
+            throw new Error('Error al eliminar el producto');
+        }
+
         await actualizarCarrito();
         showToast('Producto eliminado del carrito');
     } catch (error) {
-        console.error('Error al eliminar producto:', error);
         showToast('Error al eliminar el producto', true);
     }
 }
@@ -188,27 +247,27 @@ export async function eliminarProducto(productoId) {
  * Aumenta la cantidad de un producto en el carrito
  * @param {string} productoId - ID del producto
  */
-export async function aumentarCantidad(productoId) {
+window.aumentarCantidad = async function(productoId) {
     try {
         await cambiarCantidad(productoId, 'aumentar');
     } catch (error) {
         console.error('Error al aumentar cantidad:', error);
         showToast('Error al aumentar la cantidad', true);
     }
-}
+};
 
 /**
  * Reduce la cantidad de un producto en el carrito
  * @param {string} productoId - ID del producto
  */
-export async function reducirCantidad(productoId) {
+window.reducirCantidad = async function(productoId) {
     try {
         await cambiarCantidad(productoId, 'reducir');
     } catch (error) {
         console.error('Error al reducir cantidad:', error);
         showToast('Error al reducir la cantidad', true);
     }
-}
+};
 
 /**
  * Cambia la cantidad de un producto en el carrito
@@ -231,9 +290,6 @@ async function cambiarCantidad(productoId, accion) {
 document.addEventListener('DOMContentLoaded', initializeCart);
 
 export {
-    actualizarCarrito,
     carritoState,
-    eliminarProducto,
-    aumentarCantidad,
-    reducirCantidad
+    cambiarCantidad
 };

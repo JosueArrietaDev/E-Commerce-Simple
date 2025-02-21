@@ -1,3 +1,6 @@
+const API_URL = "http://localhost:5000/api";
+import { showToast } from './productos.js'; 
+
 /**
  * Obtiene la lista de productos desde la API
  * @returns {Promise<Array>} - Promesa que resuelve con un array de productos
@@ -16,23 +19,31 @@ export async function obtenerProductos() {
  * @param {number} cantidad - Cantidad del producto a agregar
  * @returns {Promise<Object>} - Promesa que resuelve con la respuesta de la API
  */
-export async function agregarAlCarrito(productId, cantidad) {
-    const response = await fetch('/api/carrito', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ productId, cantidad })
-    });
-    if (!response.ok) {
-        throw new Error('Failed to add product to cart');
+export async function agregarAlCarrito(productId, cantidad) { 
+    try {
+        const response = await fetch(`${API_URL}/carrito`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ productId, cantidad })
+        });
+
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.error || 'Error al agregar al carrito');
+        }
+
+        return { ok: true, data }; // Prueba Retornar un objeto con la respuesta y los datos
+    } catch (error) {
+        return { ok: false, error: error.message };
     }
-    return await response.json();
 }
 
 /**
  * Obtiene el carrito desde la API
- * @returns {Promise<Object>} - Promesa que resuelve con los datos del carrito
+ * @returns {Promise<Object>} - Promesa que resuelve con los datos del carrito prueba
  */
 export async function obtenerCarrito() {
     const response = await fetch('/api/carrito');
@@ -48,14 +59,24 @@ export async function obtenerCarrito() {
  * @returns {Promise<Object>} - Promesa que resuelve con la respuesta de la API
  */
 export async function eliminarDelCarrito(productId) {
-    const response = await fetch(`/api/carrito/${productId}`, {
-        method: 'DELETE'
-    });
-    if (!response.ok) {
-        throw new Error('Failed to remove product from cart');
+    try {
+        const response = await fetch(`/api/carrito/${productId}`, {
+            method: 'DELETE'
+        });
+
+        if (!response.ok) {
+            throw new Error('Error al eliminar el producto del carrito');
+        }
+
+        const cart = await response.json(); // Obtener carrito actualizado
+        actualizarEstadoCarrito(cart);
+        renderizarCarrito(); // Refrescar la interfaz
+    } catch (error) {
+        console.error('Error al eliminar producto:', error);
+        showToast('Error al eliminar producto', true);
     }
-    return await response.json();
 }
+
 
 /**
  * Procesa la compra del carrito

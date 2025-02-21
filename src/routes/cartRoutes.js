@@ -15,41 +15,47 @@ router.get('/', async (req, res) => {
 
 // POST /api/carrito - Agregar producto al carrito
 router.post('/', async (req, res) => {
+    const { productId, cantidad } = req.body;
+    if (!productId || cantidad <= 0) {
+        return res.status(400).json({ error: "Datos inválidos" });
+    }
     try {
-        const { productoId, cantidad } = req.body;
-        const producto = await Product.findById(productoId);
-
+        let cart = await Cart.findOne();
+        if (!cart) {
+            cart = new Cart({ productos: [] });
+        }
+        
+        const producto = await Product.findById(productId);
         if (!producto) {
-            return res.status(404).json({ message: 'Producto no encontrado' });
+            return res.status(404).json({ error: "Producto no encontrado" });
         }
 
+        // Verificar stock
         if (producto.stock < cantidad) {
-            return res.status(400).json({ message: 'Stock insuficiente' });
+            return res.status(400).json({ error: "Stock insuficiente" });
         }
 
-        let cart = await Cart.findOne() || await new Cart().save();
-
-        const existingProductIndex = cart.productos.findIndex(
-            item => item.productoId.toString() === productoId
-        );
-
-        if (existingProductIndex > -1) {
-            cart.productos[existingProductIndex].cantidad += cantidad;
+        const productoEnCarrito = cart.productos.find(p => p.productoId.toString() === productId);
+        
+        if (productoEnCarrito) {
+            productoEnCarrito.cantidad += cantidad;
         } else {
             cart.productos.push({
-                productoId,
+                productoId: producto._id,
                 nombre: producto.nombre,
                 precio: producto.precio,
-                cantidad
+                cantidad: cantidad
             });
         }
 
         await cart.save();
         res.json(cart);
-    } catch (err) {
-        res.status(500).json({ message: 'Error al agregar al carrito', error: err });
+    } catch (error) {
+        console.error("Error en POST /carrito:", error);
+        res.status(500).json({ error: "Error al agregar al carrito", details: error.message });
     }
 });
+
 
 // DELETE /api/carrito/:productoId - Eliminar producto del carrito
 router.delete('/:productoId', async (req, res) => {
@@ -67,31 +73,6 @@ router.delete('/:productoId', async (req, res) => {
         res.json(cart);
     } catch (err) {
         res.status(500).json({ message: 'Error al eliminar del carrito', error: err });
-    }
-});
-
-// POST /api/carrito/comprar - Realizar la compra
-router.post('/comprar', async (req, res) => {
-    try {
-        const cart = await Cart.findOne();
-        if (!cart || cart.productos.length === 0) {
-            return res.status(400).json({ message: 'El carrito está vacío' });
-        }
-
-        for (const item of cart.productos) {
-            const producto = await Product.findById(item.productoId);
-            if (!producto || producto.stock < item.cantidad) {
-                return res.status(400).json({ message: `Stock insuficiente para ${item.nombre}` });
-            }
-            producto.stock -= item.cantidad;
-            await producto.save();
-        }
-
-        cart.productos = [];
-        await cart.save();
-        res.json({ message: 'Compra realizada con éxito' });
-    } catch (err) {
-        res.status(500).json({ message: 'Error al procesar la compra', error: err });
     }
 });
 

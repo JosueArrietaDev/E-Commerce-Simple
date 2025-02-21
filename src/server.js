@@ -8,9 +8,9 @@ const uri = process.env.MONGO_URI;
 
 
 
-const productRoutes = require('../src/routes/productRoutes');
-const cartRoutes = require('../src/routes/cartRoutes');
-const quantityRoutes = require('../src/routes/quantityRoutes');
+const productRoutes = require('./routes/productRoutes');
+const cartRoutes = require('./routes/cartRoutes');
+const quantityRoutes = require('./routes/quantityRoutes');
 const purchaseRoutes = require('./routes/purchaseRoutes');
 const discountRoutes = require('./routes/discountRoutes');
 
@@ -18,17 +18,18 @@ const discountRoutes = require('./routes/discountRoutes');
 app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
+
 app.use(express.static('public'));
-app.use('/js', express.static(path.join(__dirname, '../src/js')));
-app.use('/css', express.static(path.join(__dirname, '/css'))); 
+
+app.use('/public/css', express.static(path.join(__dirname, '/css'))); 
+app.use('/src/js', express.static(path.join(__dirname, '/js')));
+
 app.use('/api/cantidad', quantityRoutes);
 app.use('/api/productos', productRoutes);
 app.use('/api/carrito', cartRoutes);
 app.use('/api/purchase', purchaseRoutes);
 app.use('/api/productosConDescuento', discountRoutes);
 
-console.log(__dirname);  // Depuración
-console.log(path.join(__dirname, 'src/js')); // Depuración
 
 
 // Variables de entorno

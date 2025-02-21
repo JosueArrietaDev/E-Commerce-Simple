@@ -1,3 +1,4 @@
+const API_URL = "http://localhost:5000/api";
 import { obtenerProductos, agregarAlCarrito } from './api.js';
 import { actualizarCarrito } from './carrito.js'; // Importar actualizarCarrito
 
@@ -6,21 +7,34 @@ import { actualizarCarrito } from './carrito.js'; // Importar actualizarCarrito
  */
 async function initializeCarousel() {
     try {
-        const response = await fetch('/api/productos');
+        const response = await fetch(`${API_URL}/carrito`);
         if (!response.ok) {
-            throw new Error('Failed to fetch products');
+            throw new Error('Error al obtener los productos');
         }
-        const products = await response.json();
         
-        // Tomar los primeros 3 productos
-        const featuredProducts = products.slice(0, 3);
+        const data = await response.json();
         
+        const products = data.productos; // Acceder a la propiedad 'productos'
+
+        if (!Array.isArray(products)) {
+            throw new Error('El formato de los datos recibidos no es un array');
+        }
+
+        const featuredProducts = products.slice(0, 3); // Mostrar solo 3 productos
+
         const carouselInner = document.querySelector('.carousel-inner');
         const carouselIndicators = document.querySelector('.carousel-indicators');
         
+        // Limpiar antes de agregar nuevos elementos
+        carouselInner.innerHTML = "";
+        carouselIndicators.innerHTML = "";
+
         featuredProducts.forEach((product, index) => {
             const slide = document.createElement('div');
             slide.className = `carousel-item ${index === 0 ? 'active' : ''}`;
+            
+            // Calcular el precio con descuento
+            const precioDescuento = product.precio * (1 - (product.descuento?.porcentaje || 0) / 100);
             
             slide.innerHTML = `
                 <div class="d-flex justify-content-center align-items-center" style="height: 400px;">
@@ -28,7 +42,15 @@ async function initializeCarousel() {
                         <div class="card-body text-center">
                             <h2 class="card-title">${product.nombre}</h2>
                             <p class="card-text">${product.descripcion}</p>
-                            <h3 class="text-primary">$${product.precio}</h3>
+                            <h3 class="text-primary">
+                                ${product.descuento?.activo ? 
+                                    `<span style="text-decoration: line-through;">$${product.precio}</span> $${precioDescuento.toFixed(2)}` :
+                                    `$${product.precio}`
+                                }
+                            </h3>
+                            <p class="card-text ${product.stock <= 0 ? 'text-danger' : 'text-success'}">
+                                ${product.stock > 0 ? 'En stock: ' + product.stock : 'Sin stock'}
+                            </p>
                             <button 
                                 class="btn btn-primary add-to-cart" 
                                 data-product-id="${product._id}"
@@ -43,29 +65,32 @@ async function initializeCarousel() {
             
             carouselInner.appendChild(slide);
 
-            const indicator = document.createElement('button');
-            indicator.type = 'button';
-            indicator.dataset.bsTarget = '#productCarousel';
-            indicator.dataset.bsSlideTo = index;
-            if (index === 0) {
-                indicator.className = 'active';
-                indicator.setAttribute('aria-current', 'true');
+            if (index < 3) { // Solo mostrar 3 indicadores
+                const indicator = document.createElement('button');
+                indicator.type = 'button';
+                indicator.dataset.bsTarget = '#productCarousel';
+                indicator.dataset.bsSlideTo = index;
+                if (index === 0) {
+                    indicator.className = 'active';
+                    indicator.setAttribute('aria-current', 'true');
+                }
+                carouselIndicators.appendChild(indicator);
             }
-            carouselIndicators.appendChild(indicator);
         });
-        
+
         // Inicializar el carrusel de Bootstrap
         new bootstrap.Carousel(document.getElementById('productCarousel'), {
             interval: 3000 // Cambiar cada 3 segundos
         });
-        
+
         // Agregar event listeners a los botones del carrusel
         attachAddToCartListeners();
-        
+
     } catch (error) {
         console.error('Error initializing carousel:', error);
     }
 }
+
 
 /**
  * Obtiene y muestra los productos en la interfaz
@@ -86,7 +111,12 @@ async function fetchProducts() {
  */
 function renderProducts(products) {
     const container = document.getElementById('productos-container');
-    container.innerHTML = ''; 
+    if (!container) {
+        console.warn('Contenedor de productos no encontrado');
+        return; // Exit early if container not found
+    }
+    
+    container.innerHTML = '';; 
 
     products.forEach(product => {
         const precioFinal = product.descuento?.activo 
@@ -144,17 +174,21 @@ function attachAddToCartListeners() {
  * Maneja el evento de agregar al carrito
  * @param {Event} event - Evento del click
  */
-async function handleAddToCart(event) {
+export async function handleAddToCart(event) {
     const button = event.target;
     const productId = button.getAttribute('data-product-id');
     
     try {
         button.disabled = true;
-        const response = await agregarAlCarrito(productId, 1); // Llama a la función agregarAlCarrito
-        showToast('Producto agregado al carrito');
-        await actualizarCarrito(); // Función que debe estar definida en carrito.js
+        const result = await agregarAlCarrito(productId, 1);
+
+        if (result.ok) {
+            actualizarCarrito();
+            showToast('Producto agregado correctamente');
+        } else {
+            showToast('Error al agregar producto: ' + result.error, true);
+        }
     } catch (error) {
-        console.error("Error al agregar producto:", error);
         showToast('Error al agregar producto al carrito', true);
     } finally {
         button.disabled = false;
@@ -183,7 +217,14 @@ function showError(message) {
  * @param {string} message - Mensaje a mostrar
  * @param {boolean} isError - Si es un mensaje de error
  */
-function showToast(message, isError = false) {
+let currentToast = null;
+
+export function showToast(message, isError = false) {
+    // Si hay un toast actual, removerlo
+    if (currentToast) {
+        currentToast.remove();
+    }
+
     const toastContainer = document.querySelector('.toast-container');
     if (!toastContainer) return;
 
@@ -197,11 +238,19 @@ function showToast(message, isError = false) {
     `;
 
     toastContainer.appendChild(toast);
-    const bsToast = new bootstrap.Toast(toast);
+    currentToast = toast;
+    
+    const bsToast = new bootstrap.Toast(toast, {
+        delay: 3000
+    });
+    
     bsToast.show();
 
     toast.addEventListener('hidden.bs.toast', () => {
         toast.remove();
+        if (currentToast === toast) {
+            currentToast = null;
+        }
     });
 }
 
@@ -214,6 +263,5 @@ document.addEventListener('DOMContentLoaded', () => {
 // Exportar funciones que podrían necesitarse en otros módulos
 export {
     fetchProducts,
-    renderProducts,
-    showToast
+    renderProducts
 };

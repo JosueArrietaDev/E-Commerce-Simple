@@ -1,6 +1,7 @@
 import { agregarAlCarrito } from './api.js';
-import { showToast } from './productos.js';
-import { actualizarCarrito } from './carrito.js'; // Importar actualizarCarrito
+import { showToast, handleAddToCart } from './productos.js';
+import { actualizarCarrito } from './carrito.js'; 
+
 
 async function cargarOfertas() {
     try {
@@ -76,25 +77,8 @@ function attachAddToCartListeners() {
     });
 }
 
-/**
- * Maneja el evento de agregar al carrito
- * @param {Event} event - Evento del click
- */
-async function handleAddToCart(event) {
-    const button = event.target;
-    const productId = button.getAttribute('data-product-id');
-    
-    try {
-        button.disabled = true;
-        const response = await agregarAlCarrito(productId, 1); // Llama a la función agregarAlCarrito
-        showToast('Producto agregado al carrito');
-        await actualizarCarrito(); // Llama a actualizarCarrito importada
-    } catch (error) {
-        console.error("Error al agregar producto:", error);
-        showToast('Error al agregar producto al carrito', true);
-    } finally {
-        button.disabled = false;
-    }
-}
 
-document.addEventListener('DOMContentLoaded', cargarOfertas);
+// Inicializa las ofertas cuando el DOM está listo
+document.addEventListener('DOMContentLoaded', () => {
+    cargarOfertas();
+});
