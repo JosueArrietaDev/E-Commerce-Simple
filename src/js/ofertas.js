@@ -1,3 +1,4 @@
+const API_URL = "http://localhost:5000/api";
 import { agregarAlCarrito } from './api.js';
 import { showToast, handleAddToCart } from './productos.js';
 import { actualizarCarrito } from './carrito.js'; 
@@ -5,7 +6,7 @@ import { actualizarCarrito } from './carrito.js';
 
 async function cargarOfertas() {
     try {
-        const response = await fetch('/api/productosConDescuento/ofertas');
+        const response = await fetch(`${API_URL}/productosConDescuento/ofertas`);
         if (!response.ok) {
             throw new Error('Error al cargar ofertas');
         }

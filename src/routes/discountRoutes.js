@@ -62,4 +62,14 @@ router.patch('/:id/descuento', async (req, res) => {
   }
 });
 
+// GET - Verificar descuentos
+router.get('/', async (req, res) => {
+  try {
+      const productos = await Product.find({ 'descuento.activo': true });
+      res.json(productos);
+  } catch (err) {
+      res.status(500).json({ message: 'Error al obtener descuentos', error: err });
+  }
+});
+
 module.exports = router;

@@ -6,7 +6,7 @@ import { showToast } from './productos.js';
  * @returns {Promise<Array>} - Promesa que resuelve con un array de productos
  */
 export async function obtenerProductos() {
-    const response = await fetch('/api/productos');
+    const response = await fetch(`${API_URL}/productos`);
     if (!response.ok) {
         throw new Error('Failed to fetch products');
     }
@@ -46,7 +46,7 @@ export async function agregarAlCarrito(productId, cantidad) {
  * @returns {Promise<Object>} - Promesa que resuelve con los datos del carrito prueba
  */
 export async function obtenerCarrito() {
-    const response = await fetch('/api/carrito');
+    const response = await fetch(`${API_URL}/carrito`);
     if (!response.ok) {
         throw new Error('Failed to fetch cart');
     }
@@ -60,7 +60,7 @@ export async function obtenerCarrito() {
  */
 export async function eliminarDelCarrito(productId) {
     try {
-        const response = await fetch(`/api/carrito/${productId}`, {
+        const response = await fetch(`${API_URL}/carrito/${productId}`, {
             method: 'DELETE'
         });
 
@@ -83,7 +83,7 @@ export async function eliminarDelCarrito(productId) {
  * @returns {Promise<Object>} - Promesa que resuelve con la respuesta de la API
  */
 export async function comprarCarrito() {
-    const response = await fetch('/api/comprar', {
+    const response = await fetch(`${API_URL}/comprar`, {
         method: 'POST'
     });
     if (!response.ok) {
@@ -97,7 +97,7 @@ export async function comprarCarrito() {
  * @returns {Promise<Array>} - Promesa que resuelve con un array de ofertas
  */
 export async function obtenerOfertas() {
-    const response = await fetch('/api/ofertas');
+    const response = await fetch(`${API_URL}/ofertas`);
     if (!response.ok) {
         throw new Error('Failed to fetch offers');
     }
