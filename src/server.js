@@ -27,7 +27,7 @@ app.use('/src/js', express.static(path.join(__dirname, '/js')));
 app.use('/api/cantidad', quantityRoutes);
 app.use('/api/productos', productRoutes);
 app.use('/api/carrito', cartRoutes);
-app.use('/api/purchase', purchaseRoutes);
+app.use('/api/compras', purchaseRoutes);
 app.use('/api/productosConDescuento', discountRoutes);
 
 

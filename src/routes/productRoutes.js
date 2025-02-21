@@ -28,6 +28,19 @@ router.post('/', async (req, res, next) => {
     }
 });
 
+// Buscar producto por ID
+router.get('/:id', async (req, res) => {
+    try {
+        const producto = await Product.findById(req.params.id);
+        if (!producto) {
+            return res.status(404).json({ message: 'Producto no encontrado' });
+        }
+        res.json(producto);
+    } catch (err) {
+        res.status(500).json({ message: 'Error al obtener el producto', error: err });
+    }
+});
+
 // Disminuir el stock de un producto
 router.patch('/:id/disminuir', async (req, res, next) => {
     try {
