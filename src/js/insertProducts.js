@@ -1,6 +1,7 @@
 /*
 *   INGRESAR PRODUCTOS EN CANTIDA
 *   LA BASE DE DATOS DEL NEGOCIO
+*  ejecutar con node y la ruta de este archivo
 */
 const mongoose = require('mongoose');
 const Product = require('../models/Product'); // Asegúrate de que la ruta al modelo sea correcta

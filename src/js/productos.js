@@ -26,7 +26,7 @@ async function initializeCarousel() {
         
         // Verificar si los elementos del carrusel existen
         if (!carouselInner || !carouselIndicators) {
-            console.warn('Elementos del carrusel no encontrados');
+            console.warn('Elementos del carrusel no encontrados.');
             return;
         }
 
@@ -258,14 +258,15 @@ export function showToast(message, isError = false) {
     });
 }
 
+// Exportar funciones que podrían necesitarse en otros módulos
+export {
+    fetchProducts,
+    renderProducts
+};
+
 // Inicialización cuando el DOM está listo
 document.addEventListener('DOMContentLoaded', () => {
     fetchProducts();
     initializeCarousel();
 });
 
-// Exportar funciones que podrían necesitarse en otros módulos
-export {
-    fetchProducts,
-    renderProducts
-};

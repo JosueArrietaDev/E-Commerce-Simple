@@ -152,7 +152,7 @@ async function handleCompra() {
 
     try {
         btnComprar.disabled = true;
-        const response = await fetch(`${API_URL}/purchase/checkout`, {
+        const response = await fetch(`${API_URL}/compras`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -290,12 +290,13 @@ async function cambiarCantidad(productoId, accion) {
     await actualizarCarrito();
 }
 
-// Inicialización cuando el DOM está listo
-document.addEventListener('DOMContentLoaded', initializeCart);
-
 export {
     carritoState,
     cambiarCantidad
 };
 
 window.eliminarProducto = eliminarProducto;
+
+
+// Inicialización cuando el DOM está listo
+document.addEventListener('DOMContentLoaded', initializeCart);
