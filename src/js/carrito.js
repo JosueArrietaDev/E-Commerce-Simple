@@ -228,6 +228,8 @@ function mostrarResumenCompra(resumen) {
  */
 export async function eliminarProducto(productoId) {
     try {
+        console.log(`Intentando eliminar producto con ID: ${productoId}`);
+
         const response = await fetch(`${API_URL}/carrito/${productoId}`, {
             method: 'DELETE'
         });
