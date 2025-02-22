@@ -13,7 +13,6 @@ async function initializeCarousel() {
         }
         
         const data = await response.json();
-        
         const products = data.productos; // Acceder a la propiedad 'productos'
 
         if (!Array.isArray(products)) {
@@ -25,6 +24,12 @@ async function initializeCarousel() {
         const carouselInner = document.querySelector('.carousel-inner');
         const carouselIndicators = document.querySelector('.carousel-indicators');
         
+        // Verificar si los elementos del carrusel existen
+        if (!carouselInner || !carouselIndicators) {
+            console.warn('Elementos del carrusel no encontrados');
+            return;
+        }
+
         // Limpiar antes de agregar nuevos elementos
         carouselInner.innerHTML = "";
         carouselIndicators.innerHTML = "";
@@ -41,22 +46,22 @@ async function initializeCarousel() {
                     <div class="card w-75">
                         <div class="card-body text-center">
                             <h2 class="card-title">${product.nombre}</h2>
-                            <p class="card-text">${product.descripcion}</p>
+                            <p class="card-text">${product.descripcion || 'Descripción no disponible'}</p>
                             <h3 class="text-primary">
                                 ${product.descuento?.activo ? 
                                     `<span style="text-decoration: line-through;">$${product.precio}</span> $${precioDescuento.toFixed(2)}` :
                                     `$${product.precio}`
                                 }
                             </h3>
-                            <p class="card-text ${product.stock <= 0 ? 'text-danger' : 'text-success'}">
-                                ${product.stock > 0 ? 'En stock: ' + product.stock : 'Sin stock'}
+                            <p class="card-text ${product.cantidad > 0 ? 'text-success' : 'text-danger'}">
+                                ${product.cantidad > 0 ? 'En stock: ' + product.cantidad : 'Sin stock'}
                             </p>
                             <button 
                                 class="btn btn-primary add-to-cart" 
                                 data-product-id="${product._id}"
-                                ${product.stock <= 0 ? 'disabled' : ''}
+                                ${product.cantidad <= 0 ? 'disabled' : ''}
                             >
-                                ${product.stock > 0 ? 'Agregar al Carrito' : 'Sin Stock'}
+                                ${product.cantidad > 0 ? 'Agregar al Carrito' : 'Sin Stock'}
                             </button>
                         </div>
                     </div>
@@ -91,7 +96,6 @@ async function initializeCarousel() {
     }
 }
 
-
 /**
  * Obtiene y muestra los productos en la interfaz
  */
@@ -116,7 +120,7 @@ function renderProducts(products) {
         return; // Exit early if container not found
     }
     
-    container.innerHTML = '';; 
+    container.innerHTML = ''; 
 
     products.forEach(product => {
         const precioFinal = product.descuento?.activo 
@@ -141,14 +145,14 @@ function renderProducts(products) {
                         <h4 class="text-primary mb-0">$${precioFinal.toFixed(2)}</h4>
                     </div>
                     <p class="card-text">
-                        <small class="text-muted">Stock disponible: ${product.stock}</small>
+                        <small class="text-muted">Stock disponible: ${product.cantidad}</small>
                     </p>
                     <button 
                         class="btn btn-primary add-to-cart" 
                         data-product-id="${product._id}"
-                        ${product.stock <= 0 ? 'disabled' : ''}
+                        ${product.cantidad <= 0 ? 'disabled' : ''}
                     >
-                        ${product.stock > 0 ? 'Agregar al Carrito' : 'Sin Stock'}
+                        ${product.cantidad > 0 ? 'Agregar al Carrito' : 'Sin Stock'}
                     </button>
                 </div>
             </div>

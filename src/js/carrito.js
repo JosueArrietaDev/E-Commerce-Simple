@@ -1,3 +1,4 @@
+const API_URL = "http://localhost:5000/api";
 import { obtenerCarrito, eliminarDelCarrito, comprarCarrito } from './api.js';
 import { showToast } from './productos.js';
 
@@ -27,7 +28,6 @@ function setupEventListeners() {
     if (btnComprar) {
         btnComprar.addEventListener('click', handleCompra);
     }
-
     // Observer para actualizar el carrito cuando se muestra el offcanvas
     const carritoOffcanvas = document.getElementById('carritoOffcanvas');
     if (carritoOffcanvas) {
@@ -228,8 +228,6 @@ function mostrarResumenCompra(resumen) {
  */
 export async function eliminarProducto(productoId) {
     try {
-        console.log(`Intentando eliminar producto con ID: ${productoId}`);
-
         const response = await fetch(`${API_URL}/carrito/${productoId}`, {
             method: 'DELETE'
         });
@@ -279,7 +277,7 @@ window.reducirCantidad = async function(productoId) {
  * @param {string} accion - Acción a realizar ('aumentar' o 'reducir')
  */
 async function cambiarCantidad(productoId, accion) {
-    const response = await fetch(`/api/cantidad/${productoId}/${accion}`, {
+    const response = await fetch(`${API_URL}/cantidad/${productoId}/${accion}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ cantidad: 1 })

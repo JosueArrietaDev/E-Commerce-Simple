@@ -1,3 +1,83 @@
 body {
-    background-color: grey;
+    background-color: rgb(180, 255, 189);
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    font-size: 3rem; 
+    font-weight: 700; 
+    text-align: center; 
+    color: #2C3E50; 
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+}
+
+h2 {
+    font-size: 1.5rem; 
+    font-weight: 400; 
+    text-align: center; 
+    color: #fb0b0b;
+    font-style: italic; 
+    margin-bottom: 30px; 
+}
+
+
+.fixed-button {
+    position: fixed;
+    bottom: 0px; /* Distancia desde la parte inferior */
+    left: 20px; /* Distancia desde la izquierda */
+    right: 60px; /* Distancia desde la derecha */
+    z-index: 1000; /* Asegura que esté sobre otros elementos */
+}
+
+nav {
+    background-color: #34495E;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    margin: 0 15px;
+    font-size: 1rem;
+}
+
+nav a:hover {
+    text-decoration: underline;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+footer {
+    background-color: #2C3E50;
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+}
+
+button {
+    background-color: #3498DB;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: #2980B9;
 }
