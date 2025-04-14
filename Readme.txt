@@ -31,8 +31,8 @@ Este es un proyecto de una tienda en línea simple, desarrollado con Node.js, Ex
 3. Configura las variables de entorno:
 
 Crea un archivo .env en la carpeta config/ con el siguiente contenido:
-MONGO_URI=tu_uri_de_mongodb
-PORT=5000
+  MONGO_URI=tu_uri_de_mongodb
+  PORT=5000
 
 4. Inserta productos en la base de datos (opcional):
 
@@ -45,6 +45,7 @@ npm run dev
 6.Abre tu navegador en http://localhost:5000 para ver la aplicación.
 
 #Endpoints de la API
+
 Productos:
 
 GET /api/productos: Obtiene todos los productos.
@@ -61,53 +62,12 @@ DELETE /api/carrito/:productoId: Elimina un producto del carrito.
 Descuentos:
 
 GET /api/productosConDescuento/ofertas: Obtiene productos con descuentos activos.
+
 Compras:
 
 POST /api/compras: Procesa la compra de los productos en el carrito.
 
-Tecnologías Utilizadas:
-Frontend:
-
-HTML5, CSS3, Bootstrap 5
-JavaScript (ES6+)
-Backend:
-
-Node.js, Express.js
-MongoDB (Mongoose)
-
-#Contribución
-Si deseas contribuir a este proyecto, por favor sigue estos pasos:
-
-Haz un fork del repositorio.
-Crea una rama con tu nueva funcionalidad:
-Realiza tus cambios y haz un commit:
-Haz un push a tu rama:
-Abre un Pull Request en GitHub.
-
-
-Frontend:
-
-HTML5, CSS3, Bootstrap 5
-JavaScript (ES6+)
-Backend:
-
-Node.js, Express.js
-MongoDB (Mongoose)
-Contribución
-Si deseas contribuir a este proyecto, por favor sigue estos pasos:
-
-Haz un fork del repositorio.
-Crea una rama con tu nueva funcionalidad:
-Realiza tus cambios y haz un commit:
-Haz un push a tu rama:
-Abre un Pull Request en GitHub.
-
-Licencia
-Este proyecto está bajo la licencia ISC. Puedes usarlo y modificarlo libremente.
-
-Autor
-Desarrollado por JosueArrietaDev.
-
+## Tecnologías Utilizadas:
 Frontend:
 
 - HTML5, CSS3, Bootstrap 5
@@ -118,21 +78,23 @@ Backend:
 - Node.js, Express.js
 - MongoDB (Mongoose)
 
-
-Contribución
+## Contribución
 - Si deseas contribuir a este proyecto, por favor sigue estos pasos:
 
 1. Haz un fork del repositorio.
 2. Crea una rama con tu nueva funcionalidad:
-git checkout -b nueva-funcionalidad
+  git checkout -b nueva-funcionalidad
 3. Realiza tus cambios y haz un commit:
-git commit -m "Agrega nueva funcionalidad"
+  git commit -m "Agrega nueva funcionalidad"
 4. Haz un push a tu rama:
-git push origin nueva-funcionalidad
+  git push origin nueva-funcionalidad
 5. Abre un Pull Request en GitHub
 
+
+----------------------------------------------------------------------------------------
 Licencia
 Este proyecto está bajo la licencia ISC. Puedes usarlo y modificarlo libremente.
 
 Autor
 Desarrollado por JosueArrietaDev.
+----------------------------------------------------------------------------------------
